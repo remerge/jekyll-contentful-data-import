@@ -1,5 +1,5 @@
 require 'contentful'
-require 'jekyll-contentful-data-import/data_exporter'
+require 'jekyll-contentful-data-import/multi_exporter'
 
 module Jekyll
   module Contentful
@@ -18,7 +18,7 @@ module Jekyll
             client_options(options.fetch('client_options', {}))
           )
 
-          Jekyll::Contentful::DataExporter.new(
+          Jekyll::Contentful::MultiExporter.new(
             name,
             space_client.entries(options.fetch('cda_query', {})),
             options
