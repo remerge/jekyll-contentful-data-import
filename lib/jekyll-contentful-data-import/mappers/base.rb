@@ -24,7 +24,13 @@ module Jekyll
         end
 
         def map
-          result = {'sys' => {'id' => entry.id}}
+          result = {
+            'sys' => {
+              'id' => entry.id,
+              'createdAt' => entry.created_at,
+              'updatedAt' => entry.updated_at,
+            },
+          }
 
           fields = has_multiple_locales? ? entry.fields_with_locales : entry.fields
 
