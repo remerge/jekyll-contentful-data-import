@@ -26,6 +26,7 @@ module Jekyll
 
         entries.group_by { |entry| entry.content_type.id }.each do |content_type, entry_list|
           type_config = types_config[content_type]
+          next unless type_config
 
           if type_config['as_collection']
             write_as_collection(content_type, entry_list, type_config)
