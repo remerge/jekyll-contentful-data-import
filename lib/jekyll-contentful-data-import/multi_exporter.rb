@@ -51,7 +51,7 @@ module Jekyll
             data = ::Jekyll::Contentful::Mappers::Base.mapper_for(entry, {}).map
 
             # TODO: should this be snake case?
-            data['contentType'] = content_type
+            data['sys']['contentType'] = content_type
             file.puts(YAML.dump(data))
             file.puts('---')
           end
@@ -63,7 +63,9 @@ module Jekyll
         destination_file = File.join(data_directory, type_config['maps_to'] + '.yml')
         File.open(destination_file, 'w') do |file|
           array = entry_list.map do |entry|
-            ::Jekyll::Contentful::Mappers::Base.mapper_for(entry, {}).map
+            data = ::Jekyll::Contentful::Mappers::Base.mapper_for(entry, {}).map
+            data['sys']['contentType'] = content_type
+            data
           end
           file.write(YAML.dump(array))
         end
