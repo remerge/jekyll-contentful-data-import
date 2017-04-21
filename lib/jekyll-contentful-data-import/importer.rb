@@ -18,11 +18,14 @@ module Jekyll
             client_options(options.fetch('client_options', {}))
           )
 
-          Jekyll::Contentful::MultiExporter.new(
-            name,
-            space_client.entries(options.fetch('cda_query', {})),
-            options
-          ).run
+          loaded_entries = []
+          entries = space_client.entries(options.fetch('cda_query', {}))
+          while !entries.empty?
+            loaded_entries += entries.to_a
+            entries = entries.next_page(space_client)
+          end
+
+          Jekyll::Contentful::MultiExporter.new(name, loaded_entries, options).run
         end
       end
 
