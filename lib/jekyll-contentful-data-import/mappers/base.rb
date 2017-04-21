@@ -36,6 +36,8 @@ module Jekyll
 
           fields.each do |k, v|
             name, value = map_field k, v
+            name = name.split('_').map(&:capitalize).join
+            name[0] = name[0].downcase
             result[name] = value
           end
 
@@ -59,7 +61,7 @@ module Jekyll
             map_location(value)
           when ::Contentful::Link
             map_link(value)
-          when ::Contentful::DynamicEntry
+          when ::Contentful::Entry
             map_entry(value)
           when ::Array
             map_array(value)
