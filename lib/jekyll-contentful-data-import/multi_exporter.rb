@@ -28,16 +28,19 @@ module Jekyll
           type_config = types_config[content_type]
           next unless type_config
 
-          if type_config['as_collection']
-            write_as_collection(content_type, entry_list, type_config)
-          else
-            write_as_data(content_type, entry_list, type_config)
+          entry_list.group_by(&:locale).each do |locale, locale_entries|
+            short_locale, _ = locale.split('-')
+            if type_config['as_collection']
+              write_as_collection(content_type, short_locale, locale_entries, type_config)
+            else
+              write_as_data(content_type, short_locale, locale_entries, type_config)
+            end
           end
         end
       end
 
-      def write_as_collection(content_type, entry_list, type_config)
-        destination_directory = File.join(collection_directory, type_config['maps_to'])
+      def write_as_collection(content_type, locale, entry_list, type_config)
+        destination_directory = File.join(collection_directory, locale, type_config['maps_to'])
         FileUtils.mkdir_p(destination_directory)
 
         entry_list.each do |entry|
@@ -52,15 +55,17 @@ module Jekyll
 
             # TODO: should this be snake case?
             data['sys']['contentType'] = content_type
+            data['sys']['locale'] = locale
             file.puts(YAML.dump(data))
             file.puts('---')
           end
         end
       end
 
-      def write_as_data(content_type, entry_list, type_config)
-        FileUtils.mkdir_p(data_directory)
-        destination_file = File.join(data_directory, type_config['maps_to'] + '.yml')
+      def write_as_data(content_type, locale, entry_list, type_config)
+        destination_directory = File.join(data_directory, locale)
+        FileUtils.mkdir_p(destination_directory)
+        destination_file = File.join(destination_directory, type_config['maps_to'] + '.yml')
         File.open(destination_file, 'w') do |file|
           array = entry_list.map do |entry|
             data = ::Jekyll::Contentful::Mappers::Base.mapper_for(entry, {}).map
